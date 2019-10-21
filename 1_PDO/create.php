@@ -6,7 +6,7 @@
             ''
         );
 
-        var_dump($_POST);
+        // var_dump($_POST);
 
         if (! ( isset($_POST['name']) && 
                 isset($_POST['country_code']) &&
@@ -32,7 +32,7 @@
         $req->bindValue('population', $population, PDO::PARAM_INT);
         
         if ($req->execute()) {
-            header('Location:info?code='. $countryCode);
+            header('Location:info.php?code='. $countryCode);
         }
         else {
             throw new Exception("Insert error", 1);   
@@ -41,4 +41,3 @@
     } catch (Exception $e) {
         echo $e->getMessage();
     }
-?>
