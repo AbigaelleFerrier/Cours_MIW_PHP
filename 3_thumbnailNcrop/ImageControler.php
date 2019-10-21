@@ -18,7 +18,7 @@ class ImageControler {
         if(!is_dir($this->imgPath)) mkdir( $this->imgPath);
         if(!is_dir($this->pdfPath)) mkdir( $this->pdfPath);
 
-
+        $this->thumbName = 'thumb';
 
         $this->crops = [
             ['width' => 150, 'height' => 150],
@@ -30,11 +30,11 @@ class ImageControler {
             ['width' => 800, 'height' => 600]
         ];
 
-
-        $this->resize = [
-            1080,
-            600
-        ];
+        // Pas utilisable pour le moment pour le moment
+        // $this->resize = [
+        //     1080,
+        //     600
+        // ];
 
 
     }
@@ -162,16 +162,8 @@ class ImageControler {
                         $imgsize[0], 
                         $imgsize[1]);
 
-                        var_dump('cropsParam : '  . $cropsParam['width']);                        
-                        var_dump('cropsParam : '  . $cropsParam['height']);
-                        var_dump('width_imgSrc : '  . $width_imgSrc);
-                        var_dump('height_imgSrc : ' . $height_imgSrc);
-                        var_dump('x_imgSrc : ' . $x_imgSrc);
-                        var_dump('y_imgSrc : ' . $y_imgSrc);
-                        echo '<br>';
-
                 //et on en fait un fichier jpeg avec une qualité de 90%
-                    imagejpeg($thumbnail, $dossier. $pathInfo['filename'].'_thumb_'. $cropsParam['width'] . 'x' . $cropsParam['height'] .'.jpg', 90);
+                    imagejpeg($thumbnail, $dossier. $pathInfo['filename'].'_'. $this->thumbName .'_'. $cropsParam['width'] . 'x' . $cropsParam['height'] .'.jpg', 90);
                     imagedestroy($thumbnail);
             }
         imagedestroy($source_gd_image);
