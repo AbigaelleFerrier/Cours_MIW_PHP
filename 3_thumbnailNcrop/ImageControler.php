@@ -21,7 +21,13 @@ class ImageControler {
 
 
         $this->crops = [
-            ['width' => 150, 'height' => 150]
+            ['width' => 150, 'height' => 150],
+            ['width' => 800, 'height' => 100],
+            ['width' => 300, 'height' => 200],
+            ['width' => 800, 'height' => 300],
+            ['width' => 800, 'height' => 400],
+            ['width' => 800, 'height' => 500],
+            ['width' => 800, 'height' => 600]
         ];
 
 
@@ -107,6 +113,8 @@ class ImageControler {
             if($source_gd_image === false)  return false;        
             if($imgsize         === false)  return false;
 
+            
+            $dossier = $this->imgPath;
 
         // L'image est tel en paysage (PAYSAGE ::  width > height) ou non (PORTRAIT ::  width < height)
             $paysage = ($imgsize[0] > $imgsize[1]);
@@ -117,18 +125,33 @@ class ImageControler {
                 //on créé une image "vide" (une image noire)
                     $thumbnail = imagecreatetruecolor($cropsParam['width'], $cropsParam['height']);
 
-
-                //On calcule le produit en croix selon si l'image est  en mode portrait ou paysage                
+                //On calcule le produit en croix selon si l'image est en mode portrait ou paysage     
+                // cependant si la valeur ainsi calculer est < a la valeur de notre cadre 
+                // on effectue le calcul opposer 
+                      
                     if ($paysage) {
-                        $width_imgSrc  = ($imgsize[0] * $cropsParam['height']) / $imgsize[1];
+                        $width_imgSrc  = floor(($imgsize[0] * $cropsParam['height']) / $imgsize[1]);
                         $height_imgSrc = $cropsParam['height'];
-                        $x_imgSrc = 0;
-                        $y_imgSrc = ($width_imgSrc - $cropsParam['width']) / 2;
+
+                        if($width_imgSrc < $cropsParam['width']) { // si trop petit
+                            $width_imgSrc  = $cropsParam['width'];
+                            $height_imgSrc = floor(($imgsize[1] * $cropsParam['width']) / $imgsize[0]);
+                        }    
                     }
                     else {
+                        $width_imgSrc  = $cropsParam['width'];
+                        $height_imgSrc = floor(($imgsize[1] * $cropsParam['width']) / $imgsize[0]);
 
+                        if($height_imgSrc < $cropsParam['height']) { // si trop petit
+                            $width_imgSrc  = floor(($imgsize[0] * $cropsParam['height']) / $imgsize[1]);
+                            $height_imgSrc = $cropsParam['height'];
+                        }
                     }
 
+                    $x_imgSrc = floor(($width_imgSrc  - $cropsParam['width'] ) / 2);
+                    $y_imgSrc = floor(($height_imgSrc - $cropsParam['height']) / 2);
+                        
+                    
                 //on créé une copie de notre image source
                     imagecopyresampled(
                         $thumbnail, 
@@ -139,13 +162,17 @@ class ImageControler {
                         $imgsize[0], 
                         $imgsize[1]);
 
+                        var_dump('cropsParam : '  . $cropsParam['width']);                        
+                        var_dump('cropsParam : '  . $cropsParam['height']);
+                        var_dump('width_imgSrc : '  . $width_imgSrc);
+                        var_dump('height_imgSrc : ' . $height_imgSrc);
+                        var_dump('x_imgSrc : ' . $x_imgSrc);
+                        var_dump('y_imgSrc : ' . $y_imgSrc);
+                        echo '<br>';
 
                 //et on en fait un fichier jpeg avec une qualité de 90%
-                    $dossier = $this->imgPath;
-
-                    imagejpeg($thumbnail, $dossier.$pathInfo['filename'].'_thumb_'.'1080x1080'.'.jpg', 90);
+                    imagejpeg($thumbnail, $dossier. $pathInfo['filename'].'_thumb_'. $cropsParam['width'] . 'x' . $cropsParam['height'] .'.jpg', 90);
                     imagedestroy($thumbnail);
-
             }
         imagedestroy($source_gd_image);
     }
