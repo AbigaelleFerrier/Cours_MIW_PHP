@@ -6,22 +6,30 @@ class ImageControler {
     static private $imgExt = ['jpg', 'jpeg', 'gif', 'png'];
     static private $zipExt = ['zip', '7zip', 'tar.gz'];
 
-    static private $Path      = 'assets/';
-    static private $imgPath   = 'assets/img/';
-    static private $pdfPath   = 'assets/pdf/';
-    static private $thumbPath = 'assets/thumb/';
+    static private $Path      = 'assets/upload/';
+    static private $imgPath   = 'assets/upload/src/';
+    static private $pdfPath   = 'assets/upload/pdf/';
+    static private $thumbPath = 'assets/upload/thumb/';
 
-    static private $thumbName = 'thumb';
+    static private $thumbName = 'min';
 
     static private $crops = [
-            ['width' => 666, 'height' => 666]
+            ['width' => 150, 'height' => 150]
         ];
-
+    
     // Pas utilisable pour le moment pour le moment
     // $this->resize = [
     //     1080,
     //     600
     // ];
+
+    static private $msgError_size      = 'Le fichier reçu dépasse la limite de : ';
+    static private $msgError_noFile    = 'Erreur lors de l\'uplaod, aucun fichier reçu.';
+    static private $msgError_upload    = 'Erreur lors de l\'uplaod, veuillez réessayer.';
+    static private $msgError_noUpload  = 'Fichier non envoyer';
+    static private $msgError_extention = 'Fichier jpg, png, gif ou pdf uniquement';
+
+
 
     private function __construct()
     {
@@ -35,56 +43,110 @@ class ImageControler {
         $thumbName = $this->thumbName;  
         $crops     = $this->crops;  
 
-        if(!is_dir($Path))    mkdir( $Path);
-        if(!is_dir($imgPath)) mkdir( $imgPath);
-        if(!is_dir($pdfPath)) mkdir( $pdfPath);
+        $msgError_size      = $this->msgError_size;
+        $msgError_noFile    = $this->msgError_noFile;
+        $msgError_upload    = $this->msgError_upload;
+        $msgError_noUpload  = $this->msgError_noUpload;
+        $msgError_extention = $this->msgError_extention;
+
+        self::pathCreator();
     }
 
-    /**
-     * 
-     */
-    public static function upload($__formInputName, $nameFinalFile = true, $croping = false) {
+
+    private static function pathCreator() {
+        if(!is_dir(self::$Path))      mkdir(self::$Path);
+        if(!is_dir(self::$imgPath))   mkdir(self::$imgPath);
+        if(!is_dir(self::$pdfPath))   mkdir(self::$pdfPath);
+        if(!is_dir(self::$thumbPath)) mkdir(self::$thumbPath);
+    }
+
+
+
+
+
+
+
+
+    public static function controleUploadFile($__formInputName) {
         try {
-            if (! isset($_FILES[$__formInputName])) throw new Exception("Photo non envoyer", 1);
+            if (! isset($_FILES[$__formInputName])) throw new Exception(self::$msgError_noUpload, 1);
             
             if (!($_FILES[$__formInputName]['error'] == UPLOAD_ERR_OK)) {
                 switch ($_FILES[$__formInputName]['error']){
                     case UPLOAD_ERR_INI_SIZE:
-                        throw new Exception ('Le fichier reçu dépasse la limite de '.ini_get('upload_max_filesize').'.');
+                        throw new Exception (self::$msgError_size. ini_get('upload_max_filesize').' .');
                         break;
                     case UPLOAD_ERR_PARTIAL:
                     case UPLOAD_ERR_NO_TMP_DIR:
                     case UPLOAD_ERR_CANT_WRITE:
                     case UPLOAD_ERR_EXTENSION:
-                        throw new Exception ('Erreur lors de l\'uplaod, veuillez réessayer.');
+                        throw new Exception (self::$msgError_upload);
                         break;
                     case UPLOAD_ERR_NO_FILE:
-                        throw new Exception ('Erreur lors de l\'uplaod, aucun fichier reçu.');
+                        throw new Exception (self::$msgError_noFile);
                         break;
                 }
             }
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 
+     * 
+     * 
+     * 
+     */
+    public static function upload($__formInputName, $__nameFinalFile = '', $__croping = false) {
+        self::pathCreator();
+        try {
+            if (($e = self::controleUploadFile($__formInputName)) != true) { throw new Exception($e, 1);   }
         
             $pathInfo              = pathinfo($_FILES[$__formInputName]['name']);
             $pathInfo['extension'] = strtolower($pathInfo['extension']);
             
             if      (in_array($pathInfo['extension'], self::$pdfExt)){ $destDir =  self::$pdfPath; }
             else if (in_array($pathInfo['extension'], self::$imgExt)){ $destDir =  self::$imgPath; }
-            else                                                     { throw new Exception('Fichier jpg, png, gif ou pdf uniquement', 1);   }
+            else                                                     { throw new Exception($msgError_extention, 1);   }
 
-            
-            $uniqueFileName = date('YmdHis') . '_' . microtime() . '.' .$pathInfo['extension'];
+            if ($__nameFinalFile == '') {
+                $uniqueFileName = date('YmdHis') . '_' . microtime() . '.' .$pathInfo['extension'];
+            }
+            else {
+                $uniqueFileName = $__nameFinalFile . '.' .$pathInfo['extension'];
+            }
 
             if(!(move_uploaded_file($_FILES[$__formInputName]['tmp_name'], $destDir.$uniqueFileName))) throw new Exception('Erreur lors du stockage du fichier');
             
+            if ($__croping) {
+                self::crop($destDir.$uniqueFileName);
+            }
+
             return true;
 
         } catch (Exception $e) {
-            return $e;
+            return $e->getMessage();
         }
     }
 
 
     public static function crop($filepath) {
+        self::pathCreator();
         if(!file_exists($filepath))
             return false;
 
@@ -97,14 +159,14 @@ class ImageControler {
 
         //récupération de la source de l'image d'origine
             switch ($pathInfo['extension']) {
-                case 'GIF':
+                case 'gif':
                     $source_gd_image = imagecreatefromgif($filepath);
                     break;
                 case 'jpeg':
                 case 'jpg':
                     $source_gd_image = imagecreatefromjpeg($filepath);
                     break;
-                case 'PNG':
+                case 'png':
                     $source_gd_image = imagecreatefrompng($filepath);
                     break;
             }
@@ -164,7 +226,7 @@ class ImageControler {
                         $imgsize[1]);
 
                 //et on en fait un fichier jpeg avec une qualité de 90%
-                    imagejpeg($thumbnail, $dossier. $pathInfo['filename'].'_'. self::$thumbName .'_'. $cropsParam['width'] . 'x' . $cropsParam['height'] .'.jpg', 90);
+                    imagejpeg($thumbnail, self::$thumbPath. $pathInfo['filename'].'_'. self::$thumbName .'_'. $cropsParam['width'] . 'x' . $cropsParam['height'] .'.jpg', 90);
                     imagedestroy($thumbnail);
             }
         imagedestroy($source_gd_image);
@@ -185,8 +247,8 @@ class ImageControler {
      * 
      * 
      */
-
     function resize($filepath, $thumbnailWitdh=null, $thumbnailHeight = null) {
+        self::pathCreator();
         if(!file_exists($filepath))
             return false;
 

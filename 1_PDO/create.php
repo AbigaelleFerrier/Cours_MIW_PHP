@@ -21,10 +21,10 @@
 
         $req = $bdd->prepare('INSERT INTO city (name, countrycode,district, population) VALUES(:name, :countrycode, :district, :population)');
         
-        $name = $_POST['name'];
+        $name        = $_POST['name'];
         $countryCode = $_POST['country_code'];
-        $district = $_POST['district'];
-        $population = $_POST['population'];
+        $district    = $_POST['district'];
+        $population  = $_POST['population'];
 
         $req->bindValue('name', $name, PDO::PARAM_STR);
         $req->bindValue('countrycode', $countryCode, PDO::PARAM_STR);

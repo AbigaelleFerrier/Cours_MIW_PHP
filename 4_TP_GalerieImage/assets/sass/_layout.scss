@@ -1,0 +1,43 @@
+h1,p {
+    text-align: center;
+}
+
+img {
+    width: 100%;
+}
+
+/***************
+      Flex 
+****************/
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        margin-bottom : 2rem ;
+    }
+
+    .row {
+        justify-content: center;
+        flex-direction: row;
+        display: flex;
+        width: 95%;
+        margin: 0 auto;
+        align-content: center;
+    }
+
+    .col {
+        width: 100%;
+        padding: 1em;
+        border : 0.5px solid #fff;
+    }
+
+
+    /***************
+    Media Query 
+    ****************/
+
+        @media only screen and (min-width: 1080px) {
+            .row {
+                width: 70%;
+            }
+        }
