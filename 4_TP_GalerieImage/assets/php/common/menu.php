@@ -24,7 +24,7 @@
     </div>
 
     <span class="navIcon">
-        <a href="https://">
+        <a href="https://github.com/FerrierCirill/Cours_MIW_PHP/tree/master/4_TP_GalerieImage">
             <svg class="icon"><use xlink:href="#github"></use></svg> Code Source du projet
         </a>
     </span>
