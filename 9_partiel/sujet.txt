@@ -1,0 +1,18 @@
+Objectif : 
+CrÃ©er un systÃ¨me de gestion de ticket.
+
+Sur l'accueil : 
+- OK == Lister tous les sujets avec un lien vers le dÃ©tail.
+- OK == Mettre un lien vers la gestion des utilisateurs
+- ok == Mettre un lien vers une page pour crÃ©er un nouvea sujet (avec possibilitÃ© de joindre un fichier).
+
+DÃ©tail d'un sujet :
+- OK == Afficher le contenu du sujet puis les rÃ©ponses.
+- OK == Permettre d'ajouter de nouvelles rÃ©ponses.
+
+Page gestion utilisateur :
+- OK == Lister les utilisateurs.
+- OK == Permettre l'ajout de nouvel utilisateurs
+- OK == Permettre la suppression d'un utilisateur ainsi que tout ses sujets/rÃ©ponses.
+
+La correction sera faite sur un serveur linux et PHP 7.

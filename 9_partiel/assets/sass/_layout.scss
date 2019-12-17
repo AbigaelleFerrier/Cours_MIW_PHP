@@ -1,0 +1,46 @@
+/***************
+      Global 
+****************/
+    html, body {
+        overflow-y: hidden;
+    }
+
+    body {
+        padding: 2em 5em;
+    }
+
+    a {
+        margin-right: 20px;
+    }
+
+    li {
+        width: 40%;
+        background: rgb(233, 233, 233);
+        padding: 0.2em;
+    }
+    li:nth-child(odd){
+        background: rgb(243, 243, 243);
+    }
+    
+    h1,h2,h3 {
+        font-family: sans-serif;
+    }
+
+    h1 {
+        letter-spacing: 5px;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    form {
+        * {
+            margin-right: 20px;
+            margin-bottom: 20px;
+        }
+    }
+
+/***************
+      Flex 
+****************/

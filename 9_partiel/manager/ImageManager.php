@@ -1,6 +1,6 @@
 <?php
 
-class ImageController {
+class ImageManager {
 
     static private $pdfExt = ['pdf'];
     static private $imgExt = ['jpg', 'jpeg', 'gif', 'png'];
@@ -29,9 +29,7 @@ class ImageController {
     static private $msgError_noUpload  = 'Fichier non envoyer';
     static private $msgError_extention = 'Fichier jpg, png, gif ou pdf uniquement';
 
-    public function index() {
-        header('Location:'.ROOT);
-    }
+
 
     private function __construct()
     {

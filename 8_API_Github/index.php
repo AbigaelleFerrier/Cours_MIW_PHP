@@ -13,4 +13,3 @@ $cont =  curl_exec($ch);
 curl_close($ch);
 
 $monJson = json_decode($cont); 
-echo(base64_decode($monJson->{'content'}));
